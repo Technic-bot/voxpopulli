@@ -13,5 +13,8 @@ def create_app():
 
     from . import oauth
     app.register_blueprint(oauth.bp)
+    
+    from . import polls
+    app.register_blueprint(polls.bp)
 
     return app
