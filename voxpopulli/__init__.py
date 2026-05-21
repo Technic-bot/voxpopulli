@@ -17,4 +17,7 @@ def create_app():
     from . import polls
     app.register_blueprint(polls.bp)
 
+    from . import admin
+    app.register_blueprint(admin.bp)
+
     return app
