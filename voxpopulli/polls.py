@@ -1,7 +1,11 @@
+import sqlite3
+
+from datetime import datetime, timezone
+
 from flask import (
     Flask, session,
-    Flask, redirect, request, session,
-    Blueprint, current_app 
+    request, jsonify,
+    Blueprint
 )
 
 from voxpopulli.db import get_db
@@ -16,9 +20,15 @@ def get_latest_poll():
     )
     db = get_db()
     row = db.execute(stmt).fetchone()
-    latest_name = row['name']
+    name = row['name']
+    poll_id = row['poll_id']
 
-    return latest_name
+    resp_dic = {
+        'name': name,
+        'id': poll_id
+    }
+
+    return jsonify(resp_dic)
 
 @bp.route("/poll/<poll_id>", methods=['GET'])
 def get_poll(poll_id):
@@ -29,9 +39,61 @@ def get_poll(poll_id):
     db = get_db()
     row = db.execute(stmt, (poll_id, )).fetchone()
     name = row['name']
-    return name
 
-@bp.route("/poll/<poll_id>", methods=['POST'])
+    sug_stmt = (
+        "SELECT suggestion_id, text FROM suggestions "
+        "WHERE poll_id == ?;"
+    )
+    rows = db.execute(sug_stmt, (poll_id, )).fetchall()
+    options = []
+    for r in rows:
+        opt = {
+            'text': r['text'],
+            'id': r['suggestion_id']
+        }
+        options.append(opt)
+
+    poll = {
+        'name': name,
+        'options': options    
+    }
+        
+    return jsonify(poll)
+
+@bp.route("/poll/<poll_id>/ballot", methods=['POST'])
 def cast_ballot(poll_id):
     ballot = request.get_json()
-    return
+    ballot_stmt = (
+        "INSERT INTO ballots (poll_id, submited_at, voter_id) "
+        "VALUES (?, ?, ?)"
+        "RETURNING ballot_id;"
+    )
+
+    current_date = datetime.now(timezone.utc)
+    repl = (poll_id, current_date.isoformat(), session['voter_id'])
+
+    db = get_db()
+    
+    rank_stmt = (
+        "INSERT INTO rankings (suggestion_id, ballot_id, ranked) "
+        "VALUES (?, ?, ?);"
+    )
+
+    try:
+        row = db.execute(ballot_stmt, repl).fetchone()
+        ballot_id = row['ballot_id']
+        params = []
+        for ranking in ballot['rankings']:
+            repl = (ranking['id'], ballot_id, ranking['rank'])
+            params.append(repl)
+        db.executemany(rank_stmt, params)
+        db.commit()
+    except sqlite3.IntegrityError as e:
+        db.rollback()
+        return {"Error": "ballot malformed"}, 409
+        
+    resp = {
+        'id': ballot_id,
+        'rankings': len(ballot['rankings'])
+    }
+    return jsonify(resp)
