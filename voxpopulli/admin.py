@@ -29,6 +29,7 @@ def publish_poll():
     
     db = get_db()
     row = db.execute(poll_stmt, (name, created_at, closes_at)).fetchone()
+
     poll_id = row['poll_id']
     
     sug_params = []
@@ -40,6 +41,7 @@ def publish_poll():
         "VALUES (?, ?)"
     )
     db.executemany(sug_stmt, sug_params)
+    db.commit()
         
     resp_dic = {
         'id': poll_id, 

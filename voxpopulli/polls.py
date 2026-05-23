@@ -60,6 +60,32 @@ def get_poll(poll_id):
         
     return jsonify(poll)
 
+
+@bp.route("/poll/<poll_id>/ballot", methods=['GET'])
+def get_ballot(poll_id):
+    db = get_db()
+    
+    voter = session['voter_id']
+    
+    repl = (voter, poll_id)
+    ballot_stmt = (
+        "SELECT ballots.submitted_at, suggestions.text, r.ranked "
+        "FROM ballots b"
+        "INNER JOIN rankings r on r.ballot_id = b.ballot_id "
+        "INNER JOIN suggestions s on r.suggestion_id = s.suggestion_id "
+        "WHERE b.voter_id = ? AND b.poll_id = ?;"
+    )
+    rows = db.execue(ballot_stmt, repl).fetchall()
+    ballot = []
+    for row in rows:
+        rank = row['ranked']
+        text = row['text']
+        submitted = row['submited_at']
+        ballot.append(dict(row))
+
+    return jsonify(ballot)
+
+
 @bp.route("/poll/<poll_id>/ballot", methods=['POST'])
 def cast_ballot(poll_id):
     ballot = request.get_json()
