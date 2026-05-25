@@ -9,7 +9,7 @@ test_sql_path = os.path.join(os.path.dirname(__file__), 'data.sql')
 with open(test_sql_path, 'rb') as f:
     test_sql = f.read().decode('utf8')
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def app():
     db_fd, db_path = tempfile.mkstemp()
 

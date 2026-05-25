@@ -12,10 +12,10 @@ def test_poll(client):
     datum = resp.json
     name = datum['name']
     options = datum['options']
-    assert len(options) == 2
+    assert len(options) == 5
     assert name == '90s poll'
 
-def test_ballot(client):
+def test_post_ballot(client):
     with client.session_transaction() as session:
         session['voter_id'] = 'Tec'
 
@@ -47,4 +47,58 @@ def test_malformed_ballot(client):
     )
         
     assert resp.status_code == 409
+
+def test_get_ballot(client):
+    with client.session_transaction() as session:
+        session['voter_id'] = 'Jason'
+
+    resp = client.get('/poll/456/ballot')
+    data = resp.json
+
+    assert len(data['rankings']) == 2
+
+def test_vote_flow(client):
+    with client.session_transaction() as session:
+        session['voter_id'] = 'Tec'
+
+    resp = client.get('/poll/456')
+    datum = resp.json
+    name = datum['name']
+    options = datum['options']
+    opt_dic = { o['text'] : o['id'] for o in options}
+
+    exp_opts = { 
+        "Kamen rider black transforming": 2,
+        "Zelda on a picnic": 3,
+        "Cross country roadtrip": 4,
+        "Girls in a museum exhibit": 5,
+        "CSI cosplay": 6 
+    }
+
+    assert opt_dic == exp_opts
+
+    rank_map = { 
+        "Girls in a museum exhibit":1,
+        "Kamen rider black transforming": 2
+    }
+
+    rankings = [
+        { 'rank': 1, 'id': opt_dic["Girls in a museum exhibit"]},
+        { 'rank': 2, 'id': opt_dic["Kamen rider black transforming"]}
+    ]
+            
+    ballot = { 'rankings' : rankings} 
+    
+    resp = client.post('/poll/456/ballot', json = ballot)
+    assert resp.status_code == 200
+
+    resp = client.get('/poll/456/ballot')
+    data = resp.json
+
+    for d in data['rankings']:
+        text = d['text']
+        assert rank_map[text] == d['ranked'] 
+
+
+
 
