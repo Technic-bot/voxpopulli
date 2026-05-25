@@ -69,13 +69,13 @@ def get_ballot(poll_id):
     
     repl = (voter, poll_id)
     ballot_stmt = (
-        "SELECT ballots.submitted_at, suggestions.text, r.ranked "
-        "FROM ballots b"
+        "SELECT b.submited_at, s.text, r.ranked "
+        "FROM ballots b "
         "INNER JOIN rankings r on r.ballot_id = b.ballot_id "
         "INNER JOIN suggestions s on r.suggestion_id = s.suggestion_id "
         "WHERE b.voter_id = ? AND b.poll_id = ?;"
     )
-    rows = db.execue(ballot_stmt, repl).fetchall()
+    rows = db.execute(ballot_stmt, repl).fetchall()
     ballot = []
     for row in rows:
         rank = row['ranked']
@@ -83,7 +83,11 @@ def get_ballot(poll_id):
         submitted = row['submited_at']
         ballot.append(dict(row))
 
-    return jsonify(ballot)
+    response = { 
+        'rankings' : ballot
+    }
+
+    return jsonify(response)
 
 
 @bp.route("/poll/<poll_id>/ballot", methods=['POST'])
@@ -91,20 +95,19 @@ def cast_ballot(poll_id):
     ballot = request.get_json()
     ballot_stmt = (
         "INSERT INTO ballots (poll_id, submited_at, voter_id) "
-        "VALUES (?, ?, ?)"
+        "VALUES (?, ?, ?) "
         "RETURNING ballot_id;"
     )
 
     current_date = datetime.now(timezone.utc)
     repl = (poll_id, current_date.isoformat(), session['voter_id'])
 
-    db = get_db()
-    
     rank_stmt = (
         "INSERT INTO rankings (suggestion_id, ballot_id, ranked) "
         "VALUES (?, ?, ?);"
     )
 
+    db = get_db()
     try:
         row = db.execute(ballot_stmt, repl).fetchone()
         ballot_id = row['ballot_id']
@@ -115,6 +118,7 @@ def cast_ballot(poll_id):
         db.executemany(rank_stmt, params)
         db.commit()
     except sqlite3.IntegrityError as e:
+        # print(e)
         db.rollback()
         return {"Error": "ballot malformed"}, 409
         
