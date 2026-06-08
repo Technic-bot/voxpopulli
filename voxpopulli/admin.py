@@ -8,7 +8,7 @@ from flask import (
 
 from voxpopulli.db import get_db
 
-bp = Blueprint('admin', __name__)
+bp = Blueprint('admin', __name__, url_prefix="/api")
 
 @bp.route("/admin/poll", methods=['POST'])
 def publish_poll():

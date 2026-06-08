@@ -1,14 +1,14 @@
 from flask import session
 
 def test_latest_poll(client):
-    resp = client.get('/poll')
+    resp = client.get('/api/poll')
     datum = resp.json
     name = datum['name']
     poll_id = datum['id']
     assert name == 'Sunday poll'
 
 def test_poll(client):
-    resp = client.get('/poll/456')
+    resp = client.get('/api/poll/456')
     datum = resp.json
     name = datum['name']
     options = datum['options']
@@ -20,7 +20,7 @@ def test_post_ballot(client):
         session['voter_id'] = 'Tec'
 
     resp = client.post(
-        '/poll/456/ballot',
+        '/api/poll/456/ballot',
         json = {
         "rankings": [
                 {'rank': 1, 'id': 2},
@@ -36,7 +36,7 @@ def test_malformed_ballot(client):
         session['voter_id'] = 'Tec'
 
     resp = client.post(
-        '/poll/456/ballot',
+        '/api/poll/456/ballot',
         json = {
         "rankings": [
                 {'rank': 1, 'id': 2},
@@ -52,7 +52,7 @@ def test_get_ballot(client):
     with client.session_transaction() as session:
         session['voter_id'] = 'Jason'
 
-    resp = client.get('/poll/456/ballot')
+    resp = client.get('/api/poll/456/ballot')
     data = resp.json
 
     assert len(data['rankings']) == 2
@@ -61,7 +61,7 @@ def test_vote_flow(client):
     with client.session_transaction() as session:
         session['voter_id'] = 'Tec'
 
-    resp = client.get('/poll/456')
+    resp = client.get('/api/poll/456')
     datum = resp.json
     name = datum['name']
     options = datum['options']
@@ -89,10 +89,10 @@ def test_vote_flow(client):
             
     ballot = { 'rankings' : rankings} 
     
-    resp = client.post('/poll/456/ballot', json = ballot)
+    resp = client.post('/api/poll/456/ballot', json = ballot)
     assert resp.status_code == 200
 
-    resp = client.get('/poll/456/ballot')
+    resp = client.get('/api/poll/456/ballot')
     data = resp.json
 
     for d in data['rankings']:

@@ -1,6 +1,6 @@
 
 def test_post_poll(client):
-    resp = client.post('/admin/poll', json={
+    resp = client.post('/api/admin/poll', json={
             'name': 'Sunday Poll',
             'duration': 1,
             'suggestions': [
@@ -24,12 +24,12 @@ def test_upload_flow(client):
         'duration': 1,
         'suggestions': opts
     }
-    resp = client.post("/admin/poll", 
+    resp = client.post("/api/admin/poll", 
         json = poll
     )
     
     poll_id = resp.json['id']
-    resp = client.get(f"/poll/{poll_id}")
+    resp = client.get(f"/api/poll/{poll_id}")
     poll = resp.json
     resp_options = poll['options']
 

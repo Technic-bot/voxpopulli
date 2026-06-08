@@ -10,7 +10,7 @@ from flask import (
 
 from voxpopulli.db import get_db
 
-bp = Blueprint('poll', __name__)
+bp = Blueprint('poll', __name__, url_prefix='/api')
 
 @bp.route("/poll", methods=['GET'])
 def get_latest_poll():
