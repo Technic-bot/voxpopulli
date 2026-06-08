@@ -12,7 +12,8 @@ INSERT INTO suggestions (suggestion_id, poll_id, text)
         (3, 456, "Zelda on a picnic"),
         (4, 456, "Cross country roadtrip"),
         (5, 456, "Girls in a museum exhibit"),
-        (6, 456, "CSI cosplay");
+        (6, 456, "CSI cosplay"),
+        (7, 123, "Willow's Origin Prequel: Maya and Willow's encounter");
 
 INSERT INTO ballots (ballot_id, poll_id, submited_at, voter_id) 
     VALUES 
