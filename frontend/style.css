@@ -1,0 +1,11 @@
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}   
+
+.options {
+    border: 1px solid #d4d4d0;
+    min-height: 280px;
+}
+
