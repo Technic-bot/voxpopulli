@@ -22,10 +22,12 @@ def get_latest_poll():
     row = db.execute(stmt).fetchone()
     name = row['name']
     poll_id = row['poll_id']
+    options = get_suggestions(poll_id)
 
     resp_dic = {
         'name': name,
-        'id': poll_id
+        'id': poll_id,
+        'options': options    
     }
 
     return jsonify(resp_dic)
@@ -40,6 +42,17 @@ def get_poll(poll_id):
     row = db.execute(stmt, (poll_id, )).fetchone()
     name = row['name']
 
+    options = get_suggestions(poll_id)
+
+    poll = {
+        'name': name,
+        'options': options    
+    }
+        
+    return jsonify(poll)
+
+def get_suggestions(poll_id):
+    db = get_db()
     sug_stmt = (
         "SELECT suggestion_id, text FROM suggestions "
         "WHERE poll_id == ?;"
@@ -53,13 +66,7 @@ def get_poll(poll_id):
         }
         options.append(opt)
 
-    poll = {
-        'name': name,
-        'options': options    
-    }
-        
-    return jsonify(poll)
-
+    return options
 
 @bp.route("/poll/<poll_id>/ballot", methods=['GET'])
 def get_ballot(poll_id):
