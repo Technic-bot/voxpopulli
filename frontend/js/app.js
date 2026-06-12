@@ -3,7 +3,9 @@ var options = document.getElementById('options'),
 
 var poll_name = document.getElementById('poll-title');
 var poll_date = document.getElementById('poll-date');
-var poll_ends = document.getElementById('poll-ends');
+var poll_end = document.getElementById('poll-end');
+
+var option_list = document.getElementById('options');
 
 const opts_sortable = new Sortable(options, {
     group: 'shared',
@@ -36,12 +38,20 @@ async function fetchPoll(){
 
         const result = await resp.json();
         poll_name.textContent = result.name;
+        poll_date.textContent = "Poll submitted at " + result.start;
+        poll_end.textContent = "Poll closes at " + result.end;
+        opts = result.options;
+        opts.forEach(make_suggestions);
 
-
-        console.log(result);
     } catch (error) {
         console.error(error.message);
     }
 }
 
-
+function make_suggestions(option) {
+    var suggestion = document.createElement('div');
+    suggestion.id = option.id;
+    suggestion.className = "opt";
+    suggestion.textContent = option.text;
+    option_list.appendChild(suggestion);
+}

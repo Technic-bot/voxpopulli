@@ -22,12 +22,16 @@ def get_latest_poll():
     row = db.execute(stmt).fetchone()
     name = row['name']
     poll_id = row['poll_id']
+    poll_start = row['created_at']
+    poll_end = row['closes_at']
     options = get_suggestions(poll_id)
 
     resp_dic = {
         'name': name,
         'id': poll_id,
-        'options': options    
+        'options': options,
+        'start': poll_start,
+        'end': poll_end
     }
 
     return jsonify(resp_dic)
@@ -41,12 +45,16 @@ def get_poll(poll_id):
     db = get_db()
     row = db.execute(stmt, (poll_id, )).fetchone()
     name = row['name']
+    poll_start = row['created_at']
+    poll_end = row['closes_at']
 
     options = get_suggestions(poll_id)
 
     poll = {
         'name': name,
-        'options': options    
+        'options': options,
+        'start': poll_start,
+        'end': poll_end
     }
         
     return jsonify(poll)
