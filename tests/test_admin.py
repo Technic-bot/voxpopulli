@@ -1,8 +1,12 @@
+from datetime import datetime, timedelta
 
 def test_post_poll(client):
+    now = datetime.now()
+    closing = now + timedelta(hours=1)
+    closes_at = closing.strftime("%Y-%m-%d %H:%M:%S")
     resp = client.post('/api/admin/poll', json={
             'name': 'Sunday Poll',
-            'duration': 1,
+            'closes_at': closes_at,
             'suggestions': [
                 "Leviathan with a tophat",
                 "A dog playing risk",
@@ -15,13 +19,16 @@ def test_post_poll(client):
     assert suggestions == 3
 
 def test_upload_flow(client):
+    now = datetime.now()
+    closing = now + timedelta(hours=1)
+    closes_at = closing.strftime("%Y-%m-%d %H:%M:%S")
     opts = ['The party playing DnD',
             'Marketable plushie version or protagonist',
             'Side character building model kits']
     name = 'Faux poll'
     poll = {
         'name' : name,
-        'duration': 1,
+        'closes_at': closes_at,
         'suggestions': opts
     }
     resp = client.post("/api/admin/poll", 

@@ -23,9 +23,8 @@ def publish_poll():
     curr_time = datetime.now(timezone.utc)
     created_at = curr_time.isoformat()
     name = poll['name']
-    duration = int(poll['duration'])
-    closing_time = curr_time + timedelta(hours=duration)
-    closes_at = closing_time.isoformat()
+    closes_at = poll['closes_at']
+    print(poll)
     
     db = get_db()
     row = db.execute(poll_stmt, (name, created_at, closes_at)).fetchone()

@@ -55,3 +55,4 @@ function make_suggestions(option) {
     suggestion.textContent = option.text;
     option_list.appendChild(suggestion);
 }
+

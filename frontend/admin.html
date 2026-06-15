@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Poll submission</title>
+</head>
+<link rel="stylesheet" type="text/css" href="/styles/admin.css">
+<body>
+    <div class='admin'>
+        <h1> Submit a poll </h1>
+
+        <label for='poll_name'> Poll name </label>
+        <input type='text' id='poll-name'>
+        <label for='end'> End time </label>
+        <input type='datetime-local' id='end'>
+        <label for='file-selector'> Select file </label>
+        <input type='file' id='file-selector'>
+        <label for='suggestions'> Input suggestions </label>
+        <textarea id='suggestions' name='suggestions' rows=20 cols=80></textarea>
+        <button id='submit-poll' class="submit-button"> Submit ballot </button>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
