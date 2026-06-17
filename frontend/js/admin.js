@@ -8,9 +8,38 @@ suggestions.addEventListener("dragover", enable_drag);
 const file_selector = document.getElementById('file-selector');
 file_selector.addEventListener("change", process_select);
 
+const poll_name = document.getElementById('poll-name');
+const end_date = document.getElementById('end-date');
+const poll_id = document.getElementById('poll-id');
 
-function submit_poll() {
-    console.log(this.classname);
+async function submit_poll() {
+    const txt = suggestions.value;
+    const suggs = txt.split("\n");
+    const payload = {
+        'name' : poll_name.value,
+        'closes_at' : end_date.value,
+        'suggestions' : suggs
+    }
+    const url = '/api/admin/poll';
+    try {
+        const resp = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        console.log(payload);
+        if (!resp.ok) {
+            throw new Error(`Response status ${response.status}`);
+        }
+
+        const result = await resp.json();
+        const published_id = result.id;
+        poll_id.textContent = `Poll: ${published_id} published`;
+    } catch (error) {
+        console.error(error.message);
+    }
 }
 
 function enable_drag(e) {
