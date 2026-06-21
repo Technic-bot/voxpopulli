@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from flask import (
     Flask, session,
     request, jsonify,
-    Blueprint
+    Blueprint, current_app
 )
 
 from voxpopulli.db import get_db
@@ -52,6 +52,7 @@ def get_poll(poll_id):
 
     poll = {
         'name': name,
+        'id': poll_id,
         'options': options,
         'start': poll_start,
         'end': poll_end
@@ -98,8 +99,9 @@ def get_ballot(poll_id):
         submitted = row['submited_at']
         ballot.append(dict(row))
 
+    print(ballot)
     response = { 
-        'rankings' : ballot
+        'ranking' : ballot
     }
 
     return jsonify(response)
@@ -108,14 +110,19 @@ def get_ballot(poll_id):
 @bp.route("/poll/<poll_id>/ballot", methods=['POST'])
 def cast_ballot(poll_id):
     ballot = request.get_json()
+    ranking = ballot['ranking']
     ballot_stmt = (
         "INSERT INTO ballots (poll_id, submited_at, voter_id) "
         "VALUES (?, ?, ?) "
         "RETURNING ballot_id;"
     )
 
+    voter_id = get_voter_id();
+    if not voter_id:
+        return {"Error": "Not authorized please login"}, 403
+
     current_date = datetime.now(timezone.utc)
-    repl = (poll_id, current_date.isoformat(), session['voter_id'])
+    repl = (poll_id, current_date.isoformat(), voter_id)
 
     rank_stmt = (
         "INSERT INTO rankings (suggestion_id, ballot_id, ranked) "
@@ -127,8 +134,8 @@ def cast_ballot(poll_id):
         row = db.execute(ballot_stmt, repl).fetchone()
         ballot_id = row['ballot_id']
         params = []
-        for ranking in ballot['rankings']:
-            repl = (ranking['id'], ballot_id, ranking['rank'])
+        for rank, opt_id in enumerate(ranking):
+            repl = (opt_id, ballot_id, rank)
             params.append(repl)
         db.executemany(rank_stmt, params)
         db.commit()
@@ -139,6 +146,14 @@ def cast_ballot(poll_id):
         
     resp = {
         'id': ballot_id,
-        'rankings': len(ballot['rankings'])
+        'ranking': len(ranking)
     }
     return jsonify(resp)
+
+def get_voter_id():
+    voter = None
+    if current_app.config.get('AUTH_MODE') == 'guest':
+        voter = request.remote_addr
+    else:
+        voter = session.get('voter_id')
+    return voter

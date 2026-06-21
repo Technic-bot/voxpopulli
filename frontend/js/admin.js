@@ -52,7 +52,6 @@ function process_drop(e) {
 }
 
 function process_select(e) {
-    console.log('elected');
     const files = e.target.files;
     process_options(files);
 } 

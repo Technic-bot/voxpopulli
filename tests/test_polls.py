@@ -22,14 +22,11 @@ def test_post_ballot(client):
     resp = client.post(
         '/api/poll/456/ballot',
         json = {
-        "rankings": [
-                {'rank': 1, 'id': 2},
-                {'rank': 2, 'id': 3},
-            ]
+            "ranking": [ 2, 3]
         }
     )
 
-    assert resp.json['rankings'] == 2
+    assert resp.json['ranking'] == 2
 
 def test_malformed_ballot(client):
     with client.session_transaction() as session:
@@ -38,11 +35,7 @@ def test_malformed_ballot(client):
     resp = client.post(
         '/api/poll/456/ballot',
         json = {
-        "rankings": [
-                {'rank': 1, 'id': 2},
-                # Suggestion 45 does not exist
-                {'rank': 2, 'id': 45},
-            ]
+            "ranking": [2, 45]
         }
     )
         
@@ -55,7 +48,7 @@ def test_get_ballot(client):
     resp = client.get('/api/poll/456/ballot')
     data = resp.json
 
-    assert len(data['rankings']) == 2
+    assert len(data['ranking']) == 2
 
 def test_vote_flow(client):
     with client.session_transaction() as session:
@@ -78,16 +71,16 @@ def test_vote_flow(client):
     assert opt_dic == exp_opts
 
     rank_map = { 
-        "Girls in a museum exhibit":1,
-        "Kamen rider black transforming": 2
+        "Girls in a museum exhibit":0,
+        "Kamen rider black transforming": 1
     }
 
-    rankings = [
-        { 'rank': 1, 'id': opt_dic["Girls in a museum exhibit"]},
-        { 'rank': 2, 'id': opt_dic["Kamen rider black transforming"]}
+    ranking = [
+         opt_dic["Girls in a museum exhibit"],
+         opt_dic["Kamen rider black transforming"]
     ]
             
-    ballot = { 'rankings' : rankings} 
+    ballot = { 'ranking' : ranking} 
     
     resp = client.post('/api/poll/456/ballot', json = ballot)
     assert resp.status_code == 200
@@ -95,10 +88,6 @@ def test_vote_flow(client):
     resp = client.get('/api/poll/456/ballot')
     data = resp.json
 
-    for d in data['rankings']:
+    for d in data['ranking']:
         text = d['text']
         assert rank_map[text] == d['ranked'] 
-
-
-
-

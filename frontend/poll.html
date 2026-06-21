@@ -9,6 +9,7 @@
     <div class="page">
         <div class="metadada">
             <h1 class="poll-title" id="poll-title"> POLL! </h1>
+            <p class="poll-data" id="poll-id"> </p>
             <p class="poll-data" id="poll-date"> </p>
             <p class="poll-data" id="poll-end"> </p>
         </div> 
@@ -16,23 +17,21 @@
             <div class="col">
                 <p>Options</p>
                 <div id="options" class="options">
-                    <div data-id="Florb"> Flora </div>
                 </div>
             </div>
             <div class="col">
                 <p>Ballot</p>
                 <div class="options" id="choices">
-                    <div data-id="Traec"> Trace </div>
                 </div>
             </div>
         </div>
 
-        <div class='submit'>
+        <div id='submit-button' class='submit'>
             <button> Submit ballot </button>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script src="/js/app.js"></script>
+    <script src="/js/poll.js"></script>
 </body>
 
 </html>
