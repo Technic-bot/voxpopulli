@@ -24,7 +24,6 @@ def publish_poll():
     created_at = curr_time.isoformat()
     name = poll['name']
     closes_at = poll['closes_at']
-    print(poll)
     
     db = get_db()
     row = db.execute(poll_stmt, (name, created_at, closes_at)).fetchone()

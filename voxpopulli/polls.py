@@ -8,6 +8,9 @@ from flask import (
     Blueprint, current_app
 )
 
+import pyrankvote
+from pyrankvote import Candidate, Ballot
+
 from voxpopulli.db import get_db
 
 bp = Blueprint('poll', __name__, url_prefix='/api')
@@ -99,7 +102,6 @@ def get_ballot(poll_id):
         submitted = row['submited_at']
         ballot.append(dict(row))
 
-    print(ballot)
     response = { 
         'ranking' : ballot
     }
@@ -157,3 +159,73 @@ def get_voter_id():
     else:
         voter = session.get('voter_id')
     return voter
+
+@bp.route("/poll/<poll_id>/result", methods=['GET'])
+def get_poll_result(poll_id):
+    result_stmt = (
+        "SELECT "
+           "r.suggestion_id AS sugg_id, "
+           "r.ballot_id AS ballot_id, "
+           "b.poll_id AS poll_id, "
+           "s.text AS text, "
+           "r.ranked AS ranked FROM rankings r "
+        "INNER JOIN ballots b ON b.ballot_id=r.ballot_id "
+        "INNER JOIN suggestions s ON s.suggestion_id=r.suggestion_id "
+        "WHERE b.poll_id=? "
+        "ORDER BY r.ballot_id, r.ranked;"
+    )
+
+    db = get_db()
+    rows = db.execute(result_stmt, (poll_id,)).fetchall()
+    ballots = {}
+    for r in rows:
+        ballot_id = r['ballot_id']
+        suggestion = r['text']
+        if not ballot_id in ballots:
+            suggs = [suggestion]
+            ballots[ballot_id] = suggs
+        else:
+            ballots[ballot_id].append(suggestion)
+
+    # Pass dict to pyRankVote here 
+    result = instant_run_off(ballots)
+    winner, rounds = decode_election(result)
+
+    winners = {
+        'winner': winner
+        # Return rounds too eventually
+    }
+
+    return winners
+
+def instant_run_off(ballots):
+    election_ballots = []
+    election_candidates = []
+    for b_id, suggs in ballots.items(): 
+        pyrank_candidates = [] 
+        for s in suggs:
+            candidate = Candidate(s)
+            election_candidates.append(candidate)
+            pyrank_candidates.append(candidate)
+        pyrank_ballot = Ballot(ranked_candidates=pyrank_candidates)
+        election_ballots.append(pyrank_ballot)
+
+    # Dedupplicating should not be needed per internal library workings 
+    # But done for sanity
+    election_candidates = list(set(election_candidates))
+    result = pyrankvote.instant_runoff_voting(
+        election_candidates,
+        election_ballots)
+    return result
+
+def decode_election(result):
+    winner = result.get_winners()[0].name
+    rounds = result.rounds
+    return winner, rounds
+
+
+
+
+        
+
+
