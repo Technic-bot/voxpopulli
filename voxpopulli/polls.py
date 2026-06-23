@@ -192,8 +192,8 @@ def get_poll_result(poll_id):
     winner, rounds = decode_election(result)
 
     winners = {
-        'winner': winner
-        # Return rounds too eventually
+        'winner': winner,
+        'rounds': rounds
     }
 
     return winners
@@ -220,7 +220,22 @@ def instant_run_off(ballots):
 
 def decode_election(result):
     winner = result.get_winners()[0].name
-    rounds = result.rounds
+    pyrank_rounds = result.rounds
+    rounds = []
+
+    for r in pyrank_rounds:
+        opt_result = []
+        for pyround in r.candidate_results:
+            candidate, votes, status = pyround
+            suggestion = str(candidate)
+            opt = {
+                'option': suggestion,
+                'votes': votes,
+                'status': status
+            }
+            opt_result.append(opt)
+        rounds.append(opt_result)
+        
     return winner, rounds
 
 
