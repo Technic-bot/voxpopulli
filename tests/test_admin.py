@@ -18,6 +18,23 @@ def test_post_poll(client):
 
     assert suggestions == 3
 
+def test_empty_suggestion(client):
+    now = datetime.now()
+    closing = now + timedelta(hours=1)
+    closes_at = closing.strftime("%Y-%m-%d %H:%M:%S")
+    resp = client.post('/api/admin/poll', json={
+            'name': 'Empty Poll',
+            'closes_at': closes_at,
+            'suggestions': [
+                "A non empy suggestion",
+                " ",
+            ]
+           })
+    new_poll_id = resp.json['id']
+    suggestions = resp.json['suggestions']
+
+    assert suggestions == 1
+
 def test_upload_flow(client):
     now = datetime.now()
     closing = now + timedelta(hours=1)

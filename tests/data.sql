@@ -18,7 +18,9 @@ INSERT INTO suggestions (suggestion_id, poll_id, text)
         (17, 789, "Kat sits in the park feeding pidgeons"),
         (18, 789, "Short haired Raine in wolf form"),
         (19, 789, "Flora in lynx form"),
-        (20, 789, "Zen and Natani assasin training");
+        (20, 789, "Zen and Natani assasin training"),
+        (21, 789, "Bug modern trio"),
+        (22, 789, "Main Trio playing football");
 
 INSERT INTO ballots (ballot_id, poll_id, submited_at, voter_id) 
     VALUES 
@@ -26,7 +28,8 @@ INSERT INTO ballots (ballot_id, poll_id, submited_at, voter_id)
         (22, 789, '2026-06-21T05:03:03.867991+00:00','Florb'),
         (26, 789, '2026-06-20T05:03:02.847981+00:00','Tec'),
         (27, 789, date('now'), 'Noxtella'),
-        (28, 789, date('now', '-1 minute'), 'HeavenlyMotors');
+        (28, 789, date('now', '-1 minute'), 'HeavenlyMotors'),
+        (29, 789, date('now', '-2 minute'), 'Iron');
 
 
 INSERT INTO rankings (suggestion_id, ballot_id, ranked) 
@@ -41,4 +44,8 @@ INSERT INTO rankings (suggestion_id, ballot_id, ranked)
         (18, 27, 1),
         (17, 27, 2),
         (19, 27, 3),
-        (20, 28, 0);
+        (20, 28, 0),
+        (22, 28, 1),
+        (19, 29, 0),
+        (17, 29, 2),
+        (21, 29, 3);

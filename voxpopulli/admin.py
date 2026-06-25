@@ -32,7 +32,9 @@ def publish_poll():
     
     sug_params = []
     for s in poll['suggestions']:
-        sug_params.append((poll_id, s))
+        sug_text = s.strip()
+        if sug_text:
+            sug_params.append((poll_id, sug_text))
 
     sug_stmt = (
         "INSERT INTO suggestions (poll_id, text) "
