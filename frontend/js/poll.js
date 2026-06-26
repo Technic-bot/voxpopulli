@@ -1,3 +1,5 @@
+import {get_poll_id} from './utils.js';
+
 var options = document.getElementById('options'),
     choices = document.getElementById('choices');
 
@@ -36,7 +38,7 @@ async function fetchPoll(){
         poll_end.textContent = "Poll closes at " + result.end;
         poll_id_p.textContent = "Poll id: " + result.id;
         poll_id = result.id;
-        opts = result.options;
+        const opts = result.options;
         opts.forEach(make_suggestions);
 
     } catch (error) {
@@ -45,15 +47,6 @@ async function fetchPoll(){
 }
 
 var poll_id = get_poll_id();
-function get_poll_id(){
-    // Gets the poll requested via url if applicable
-    const path = window.location.pathname;
-    var poll_id = "";
-    if (path.startsWith("/poll/")) {
-        poll_id = "/" + path.split("/")[2];
-    }
-    return poll_id;
-}
 
 function make_suggestions(option) {
     var suggestion = document.createElement('div');
