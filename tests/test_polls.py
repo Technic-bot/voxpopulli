@@ -91,3 +91,12 @@ def test_vote_flow(client):
     for d in data['ranking']:
         text = d['text']
         assert rank_map[text] == d['ranked'] 
+
+def test_unexistent_poll_cast(client):
+    resp = client.post("/api/poll/2016/ballot",
+        json = {
+            "ranking": [ 2, 3]
+        }
+    )
+    
+    assert resp.status_code == 404

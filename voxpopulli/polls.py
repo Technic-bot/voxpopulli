@@ -41,27 +41,34 @@ def get_latest_poll():
 
 @bp.route("/poll/<poll_id>", methods=['GET'])
 def get_poll(poll_id):
+    poll = find_poll(poll_id)
+    return jsonify(poll)
+
+
+def find_poll(poll_id):
     stmt = ( 
         "SELECT poll_id, name, created_at, closes_at from polls "
         " WHERE poll_id = ?;"
     )
     db = get_db()
     row = db.execute(stmt, (poll_id, )).fetchone()
-    name = row['name']
-    poll_start = row['created_at']
-    poll_end = row['closes_at']
+    poll = {}
+    if row: 
+        name = row['name']
+        poll_start = row['created_at']
+        poll_end = row['closes_at']
 
-    options = get_suggestions(poll_id)
+        options = get_suggestions(poll_id)
 
-    poll = {
-        'name': name,
-        'id': poll_id,
-        'options': options,
-        'start': poll_start,
-        'end': poll_end
-    }
+        poll = {
+            'name': name,
+            'id': poll_id,
+            'options': options,
+            'created_at': poll_start,
+            'closes_at': poll_end
+        }
+    return poll
         
-    return jsonify(poll)
 
 def get_suggestions(poll_id):
     db = get_db()
@@ -111,6 +118,15 @@ def get_ballot(poll_id):
 
 @bp.route("/poll/<poll_id>/ballot", methods=['POST'])
 def cast_ballot(poll_id):
+    poll = find_poll(poll_id)
+    error, code = check_poll_accessible(poll);
+    if error:
+        return error, code
+    
+    voter_id = get_voter_id();
+    if not voter_id:
+        return {"Error": "Not authorized please login"}, 403
+
     ballot = request.get_json()
     ranking = ballot['ranking']
     ballot_stmt = (
@@ -118,10 +134,6 @@ def cast_ballot(poll_id):
         "VALUES (?, ?, ?) "
         "RETURNING ballot_id;"
     )
-
-    voter_id = get_voter_id();
-    if not voter_id:
-        return {"Error": "Not authorized please login"}, 403
 
     current_date = datetime.now(timezone.utc)
     repl = (poll_id, current_date.isoformat(), voter_id)
@@ -160,8 +172,25 @@ def get_voter_id():
         voter = session.get('voter_id')
     return voter
 
+def check_poll_accessible(poll):
+    """ Check if poll exist and is accsible """
+    error_json = None
+    error_code = 200
+    if not poll:
+        error_json = {
+            "error": "poll_not_found",
+            "message" : "Poll does not exit"
+        }
+        error_code = 404
+    return error_json, error_code
+
 @bp.route("/poll/<poll_id>/result", methods=['GET'])
 def get_poll_result(poll_id):
+    poll = find_poll(poll_id)
+    error, code = check_poll_accessible(poll);
+    if error:
+        return error, code
+
     result_stmt = (
         "SELECT "
            "r.suggestion_id AS sugg_id, "
@@ -192,6 +221,9 @@ def get_poll_result(poll_id):
     winner, rounds = decode_election(result)
 
     winners = {
+        'name': poll['name'],
+        'closes_at' : poll['closes_at'],
+        'created_at' : poll['created_at'],
         'winner': winner,
         'rounds': rounds
     }
