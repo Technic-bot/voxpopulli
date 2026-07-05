@@ -4,7 +4,7 @@ INSERT INTO polls (poll_id, name, created_at, closes_at)
     VALUES 
         (123, "Sunday poll", date('now'), date('now', '+7 days') ),
         (456, "90s poll", "1996-07-01", date('now', '+7 days') ),
-        (789, "MkII poll", date('now'), date('now', "+7 days") );
+        (789, "MkII poll", date('now', '-1 days'), date('now', "+7 days") );
 
 INSERT INTO suggestions (suggestion_id, poll_id, text)
     VALUES

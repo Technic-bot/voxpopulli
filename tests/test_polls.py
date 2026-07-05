@@ -100,3 +100,22 @@ def test_unexistent_poll_cast(client):
     )
     
     assert resp.status_code == 404
+
+def test_get_polls(client):
+    resp = client.get('/api/polls')
+    polls = resp.json
+
+    assert len(polls)==3
+
+def test_get_one_poll(client):
+    resp = client.get('/api/polls?limit=1')
+    polls = resp.json
+
+    assert len(polls)==1
+
+def test_poll_pagination(client):
+    resp = client.get('/api/polls?offset=1&limit=1')
+    polls = resp.json
+    p_id = polls[0]['poll_id']
+    assert len(polls)==1
+    assert p_id==789

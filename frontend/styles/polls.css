@@ -1,0 +1,24 @@
+.poll {
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 1rem;
+    min-width: 120px;
+}
+
+.polls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.next-button {
+    padding: 1px 6px;
+    border: 1px outset buttonborder;
+    border-radius: 3px;
+    color: buttontext;
+    background-color: buttonface;
+    text-decoration: none;
+}
+

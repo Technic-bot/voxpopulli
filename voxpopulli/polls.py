@@ -33,11 +33,34 @@ def get_latest_poll():
         'name': name,
         'id': poll_id,
         'options': options,
-        'start': poll_start,
-        'end': poll_end
+        'created_at': poll_start,
+        'closes_at': poll_end
     }
 
     return jsonify(resp_dic)
+
+@bp.route("/polls", methods=["GET"])
+def get_polls():
+    offset = request.args.get('offset', 0, type=int)
+    limit = request.args.get('limit', 10, type=int)
+    stmt = ( 
+        "SELECT poll_id, name, created_at, closes_at from polls "
+        "ORDER BY created_at DESC LIMIT ? OFFSET ?;"
+    )
+    db = get_db()
+    rows = db.execute(stmt, (limit,offset,)).fetchall()
+    polls = []
+    for r in rows:
+        poll = {
+            'name' : r['name'],
+            'poll_id' : r['poll_id'],
+            'created_at' : r['created_at'],
+            'closes_at' : r['closes_at']
+        }
+        polls.append(poll)
+    
+    return polls
+
 
 @bp.route("/poll/<poll_id>", methods=['GET'])
 def get_poll(poll_id):

@@ -34,8 +34,8 @@ async function fetchPoll(){
 
         const result = await resp.json();
         poll_name.textContent = result.name;
-        poll_date.textContent = "Poll submitted at " + result.start;
-        poll_end.textContent = "Poll closes at " + result.end;
+        poll_date.textContent = "Poll submitted at " + result.created_at;
+        poll_end.textContent = "Poll closes at " + result.closes_at;
         poll_id_p.textContent = "Poll id: " + result.id;
         poll_id = result.id;
         const opts = result.options;
