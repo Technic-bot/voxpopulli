@@ -146,6 +146,13 @@ def cast_ballot(poll_id):
     if error:
         return error, code
     
+    if not check_poll_open(poll):
+        error = {
+            'error' : 'poll_finished',
+            'message': 'Poll is closed cannot vote'
+        }
+        return error, 403
+
     voter_id = get_voter_id();
     if not voter_id:
         return {"Error": "Not authorized please login"}, 403
@@ -205,6 +212,7 @@ def check_poll_accessible(poll):
             "message" : "Poll does not exit"
         }
         error_code = 404
+        
     return error_json, error_code
 
 @bp.route("/poll/<poll_id>/result", methods=['GET'])
@@ -213,6 +221,13 @@ def get_poll_result(poll_id):
     error, code = check_poll_accessible(poll);
     if error:
         return error, code
+    
+    if check_poll_open(poll):
+        error = {
+            'error' : 'poll_not_finished',
+            'message': 'Poll is not closed'
+        }
+        return error, 403
 
     result_stmt = (
         "SELECT "
@@ -253,6 +268,14 @@ def get_poll_result(poll_id):
 
     return winners
 
+def check_poll_open(poll):
+    is_poll_open = True
+    close_time = datetime.fromisoformat(poll['closes_at'], )
+    if close_time < datetime.now():
+        is_poll_open = False
+
+    return is_poll_open
+
 def instant_run_off(ballots):
     election_ballots = []
     election_candidates = []
@@ -292,10 +315,3 @@ def decode_election(result):
         rounds.append(opt_result)
         
     return winner, rounds
-
-
-
-
-        
-
-
