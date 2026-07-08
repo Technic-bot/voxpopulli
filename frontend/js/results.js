@@ -11,7 +11,7 @@ var poll_end = document.getElementById('poll-end');
 document.addEventListener("DOMContentLoaded", fetchPoll);
 
 async function fetchPoll(){
-    const url = `/api/poll/${poll_id}/result`;
+    const url = `/api/polls/${poll_id}/result`;
     try {
         const resp = await fetch(url);
         if (!resp.ok) {

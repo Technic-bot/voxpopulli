@@ -63,7 +63,7 @@ async function submit_ballot(){
         'ranking': ranking
     };
     try {
-        const url = `/api/poll/${poll_id}/ballot`;
+        const url = `/api/polls/${poll_id}/ballot`;
         const resp = await fetch(url, {
             method: "POST",
             headers: {
