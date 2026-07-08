@@ -13,7 +13,7 @@ from pyrankvote import Candidate, Ballot
 
 from voxpopulli.db import get_db
 
-bp = Blueprint('poll', __name__, url_prefix='/api')
+bp = Blueprint('polls', __name__, url_prefix='/api')
 
 @bp.route("/poll", methods=['GET'])
 def get_latest_poll():
@@ -62,7 +62,7 @@ def get_polls():
     return polls
 
 
-@bp.route("/poll/<poll_id>", methods=['GET'])
+@bp.route("/polls/<poll_id>", methods=['GET'])
 def get_poll(poll_id):
     poll = find_poll(poll_id)
     return jsonify(poll)
@@ -110,7 +110,7 @@ def get_suggestions(poll_id):
 
     return options
 
-@bp.route("/poll/<poll_id>/ballot", methods=['GET'])
+@bp.route("/polls/<poll_id>/ballot", methods=['GET'])
 def get_ballot(poll_id):
     db = get_db()
     
@@ -139,7 +139,7 @@ def get_ballot(poll_id):
     return jsonify(response)
 
 
-@bp.route("/poll/<poll_id>/ballot", methods=['POST'])
+@bp.route("/polls/<poll_id>/ballot", methods=['POST'])
 def cast_ballot(poll_id):
     poll = find_poll(poll_id)
     error, code = check_poll_accessible(poll);
@@ -215,7 +215,7 @@ def check_poll_accessible(poll):
         
     return error_json, error_code
 
-@bp.route("/poll/<poll_id>/result", methods=['GET'])
+@bp.route("/polls/<poll_id>/result", methods=['GET'])
 def get_poll_result(poll_id):
     poll = find_poll(poll_id)
     error, code = check_poll_accessible(poll);
