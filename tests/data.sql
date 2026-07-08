@@ -2,9 +2,10 @@ PRAGMA foreign_keys = ON;
 
 INSERT INTO polls (poll_id, name, created_at, closes_at)
     VALUES 
-        (123, "Sunday poll", date('now'), date('now', '+7 days') ),
-        (456, "90s poll", "1996-07-01", date('now', '+7 days') ),
-        (789, "MkII poll", date('now', '-1 days'), date('now', "+7 days") );
+        (123, "Sunday poll", date('now'), datetime('now', '+7 days') ),
+        (456, "90s poll", "1996-07-01", datetime('now', '+7 days') ),
+        (789, "MkII poll", date('now', '-3 days'), datetime('now', "-2 days") ),
+        (999, "Closed poll", date('now', '-2 days'), datetime('now', "-1 days") );
 
 INSERT INTO suggestions (suggestion_id, poll_id, text)
     VALUES

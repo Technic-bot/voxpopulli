@@ -53,7 +53,7 @@ def test_upload_flow(client):
     )
     
     poll_id = resp.json['id']
-    resp = client.get(f"/api/poll/{poll_id}")
+    resp = client.get(f"/api/polls/{poll_id}")
     poll = resp.json
     resp_options = poll['options']
 

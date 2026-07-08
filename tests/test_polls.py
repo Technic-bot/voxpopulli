@@ -8,7 +8,7 @@ def test_latest_poll(client):
     assert name == 'Sunday poll'
 
 def test_poll(client):
-    resp = client.get('/api/poll/456')
+    resp = client.get('/api/polls/456')
     datum = resp.json
     name = datum['name']
     options = datum['options']
@@ -20,7 +20,7 @@ def test_post_ballot(client):
         session['voter_id'] = 'Tec'
 
     resp = client.post(
-        '/api/poll/456/ballot',
+        '/api/polls/456/ballot',
         json = {
             "ranking": [ 2, 3]
         }
@@ -33,7 +33,7 @@ def test_malformed_ballot(client):
         session['voter_id'] = 'Tec'
 
     resp = client.post(
-        '/api/poll/456/ballot',
+        '/api/polls/456/ballot',
         json = {
             "ranking": [2, 45]
         }
@@ -45,7 +45,7 @@ def test_get_ballot(client):
     with client.session_transaction() as session:
         session['voter_id'] = 'Jason'
 
-    resp = client.get('/api/poll/456/ballot')
+    resp = client.get('/api/polls/456/ballot')
     data = resp.json
 
     assert len(data['ranking']) == 2
@@ -54,7 +54,7 @@ def test_vote_flow(client):
     with client.session_transaction() as session:
         session['voter_id'] = 'Tec'
 
-    resp = client.get('/api/poll/456')
+    resp = client.get('/api/polls/456')
     datum = resp.json
     name = datum['name']
     options = datum['options']
@@ -82,10 +82,10 @@ def test_vote_flow(client):
             
     ballot = { 'ranking' : ranking} 
     
-    resp = client.post('/api/poll/456/ballot', json = ballot)
+    resp = client.post('/api/polls/456/ballot', json = ballot)
     assert resp.status_code == 200
 
-    resp = client.get('/api/poll/456/ballot')
+    resp = client.get('/api/polls/456/ballot')
     data = resp.json
 
     for d in data['ranking']:
@@ -93,7 +93,7 @@ def test_vote_flow(client):
         assert rank_map[text] == d['ranked'] 
 
 def test_unexistent_poll_cast(client):
-    resp = client.post("/api/poll/2016/ballot",
+    resp = client.post("/api/polls/2016/ballot",
         json = {
             "ranking": [ 2, 3]
         }
@@ -101,11 +101,20 @@ def test_unexistent_poll_cast(client):
     
     assert resp.status_code == 404
 
+def test_cast_closed_poll(client):
+    resp = client.post("/api/polls/999/ballot",
+        json = {
+            "ranking": [ 2, 3]
+        }
+    )
+    
+    assert resp.status_code == 403
+
 def test_get_polls(client):
     resp = client.get('/api/polls')
     polls = resp.json
 
-    assert len(polls)==3
+    assert len(polls)==4
 
 def test_get_one_poll(client):
     resp = client.get('/api/polls?limit=1')
@@ -118,4 +127,4 @@ def test_poll_pagination(client):
     polls = resp.json
     p_id = polls[0]['poll_id']
     assert len(polls)==1
-    assert p_id==789
+    assert p_id==999
