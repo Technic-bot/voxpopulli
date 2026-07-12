@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", fetchPoll);
 submit_button.addEventListener("click", submit_ballot);
 
 async function fetchPoll(){
-    const url = `/api/polls/${poll_id}`;
+    const url = `api/polls/${poll_id}`;
     try {
         const resp = await fetch(url);
         if (!resp.ok) {

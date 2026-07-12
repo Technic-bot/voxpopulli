@@ -20,7 +20,7 @@ async function submit_poll() {
         'closes_at' : end_date.value,
         'suggestions' : suggs
     }
-    const url = '/api/admin/poll';
+    const url = 'api/admin/poll';
     try {
         const resp = await fetch(url, {
             method: "POST",

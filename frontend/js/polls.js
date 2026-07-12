@@ -10,7 +10,7 @@ async function fetchPolls(){
     const offset = urlParams.get('offset') || '0' ;
     const limit = urlParams.get('limit') || '10' ;
 
-    const url = `/api/polls?offset=${offset}&limit=${limit}`;
+    const url = `api/polls?offset=${offset}&limit=${limit}`;
     try {
         const resp = await fetch(url);
         if (!resp.ok) {
@@ -33,7 +33,7 @@ function make_polls(polls) {
         const poll_id = p.poll_id;
         poll_el.className = 'poll';
         poll_el.id = poll_id;
-        poll_url.href = `/poll/${poll_id}`;
+        poll_url.href = `poll/${poll_id}`;
         poll_url.textContent = p.name + " " + p.closes_at;
         poll_el.appendChild(poll_url);
         polls_div.appendChild(poll_el);
