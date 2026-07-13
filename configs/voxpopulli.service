@@ -1,0 +1,17 @@
+# Copy to /etc/systemd/system/
+[Unit]
+Description=Gunicorn instance to serve VoxPopulli
+After=network.target
+
+[Service]
+User=armorclad
+Group=nginx
+WorkingDirectory=/u01/voxpopulli
+Environment="VOX_SETTINGS=/u01/voxpopulli/vox.env"
+ExecStart=/u01/voxpopulli/venv/bin/gunicorn --access-logfile /u01/voxpopulli/gun.log --error-logfile /u01/voxpopulli/gun.error.log --workers 3 -m 777 'vox:create_app()'
+
+[Install]
+WantedBy=multi-user.target
+
+
+

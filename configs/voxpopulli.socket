@@ -1,0 +1,11 @@
+[Unit]
+Description=Voxpopulli socket
+
+[Socket]
+ListenStream=/run/vox.sock
+SocketUser=armorclad
+SocketGroup=nginx
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target
