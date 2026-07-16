@@ -1,9 +1,10 @@
 export function get_poll_id(){
     // Gets the poll requested via url if applicable
-    const path = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
     var poll_id = "";
-    if (path.startsWith("/poll/")) {
-        poll_id = "/" + path.split("/")[2];
+    if (id) {
+        poll_id = "/" + id;
     }
     return poll_id;
 }
