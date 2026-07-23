@@ -194,7 +194,7 @@ def cast_ballot(poll_id):
             'error' : 'double_vote',
             'message': f'Vote from {voter_id} already casted'
         }
-        return {"Error": "ballot malformed"}, 409
+        return error, 409
         
     resp = {
         'id': ballot_id,
