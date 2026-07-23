@@ -156,7 +156,7 @@ def cast_ballot(poll_id):
     voter_id = get_voter_id();
     if not voter_id:
         error = {
-            'error' : 'unathorized',
+            'error' : 'unauthorized',
             'message': 'Not authorized please login'
         }
         return error, 403
@@ -190,6 +190,10 @@ def cast_ballot(poll_id):
     except sqlite3.IntegrityError as e:
         # print(e)
         db.rollback()
+        error = {
+            'error' : 'double_vote',
+            'message': f'Vote from {voter_id} already casted'
+        }
         return {"Error": "ballot malformed"}, 409
         
     resp = {
@@ -201,7 +205,7 @@ def cast_ballot(poll_id):
 def get_voter_id():
     voter = None
     if current_app.config.get('AUTH_MODE') == 'guest':
-        voter = request.remote_addr
+        voter = request.headers.get('X-Forwarded-For')
     else:
         voter = session.get('voter_id')
     return voter
