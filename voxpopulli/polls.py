@@ -155,7 +155,11 @@ def cast_ballot(poll_id):
 
     voter_id = get_voter_id();
     if not voter_id:
-        return {"Error": "Not authorized please login"}, 403
+        error = {
+            'error' : 'unathorized',
+            'message': 'Not authorized please login'
+        }
+        return error, 403
 
     ballot = request.get_json()
     ranking = ballot['ranking']
