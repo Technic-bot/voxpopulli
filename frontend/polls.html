@@ -2,16 +2,18 @@
 <html>
 <head>
     <title>Poll list</title>
+    <!link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="styles/polls.css">
 </head>
-<!link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
-<link rel="stylesheet" type="text/css" href="styles/polls.css">
 <body>
-    <div id='polls' class="polls"> 
-        <div class="metadada">
-            <h1 class="poll-title" id="poll-title"> Polls listed: </h1>
-        </div> 
-        <a id="next-button" href="polls.html" class="next-button"> More </a>
+    <div class="metadata">
+        <h1 class="poll-title" id="poll-title"> Polls listed: </h1>
     </div> 
+    <div id='polls' class="polls"> 
+    </div> 
+    <div class="controls">
+        <a id="next-button" href="polls.html" class="next-button"> More </a>
+    </div>
     <script type='module' src="js/polls.js"></script>
 </body>
 
