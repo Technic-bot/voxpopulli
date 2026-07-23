@@ -9,3 +9,6 @@
     min-height: 280px;
 }
 
+.ballot-status {
+    color: red;
+}

@@ -11,6 +11,8 @@ var poll_end = document.getElementById('poll-end');
 var option_list = document.getElementById('options');
 var submit_button = document.getElementById('submit-button');
 
+var ballot_state = document.getElementById('ballot-status');
+
 const opts_sortable = new Sortable(options, {
     group: 'shared',
     animation: 150
@@ -72,6 +74,8 @@ async function submit_ballot(){
             body: JSON.stringify(payload)
         });
         if (!resp.ok) {
+            const error_msg = await resp.json();
+            ballot_state.textContent = error_msg.message;
             throw new Error(`Response status ${resp.status}`);
         }
     } catch (error) {
