@@ -12,3 +12,27 @@
 .ballot-status {
     color: red;
 }
+
+.opt {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.opt::before {
+    content: "\283F";
+    margin-right: 8px;
+    color: #999;
+    font-size: 16px;
+}
+
+.opt:active {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
