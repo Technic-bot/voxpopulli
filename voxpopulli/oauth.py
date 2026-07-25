@@ -32,20 +32,19 @@ def tokenize():
         'scope' : 'identity,identity[email],identity.memberships'
     }
     headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
-    print(f"Got code {code}")
     r = httpx.post(token_url, data=token_params, headers=headers)
-    print(r.status_code)
     resp_dict = r.json()
-    pprint.pprint(resp_dict)
+    # pprint.pprint(resp_dict)
 
     access_token = resp_dict['access_token']
     refresh_token = resp_dict['refresh_token']
     expiry = resp_dict['expires_in']
     scope = resp_dict['scope']
 
-    patreon_id = get_identity(access_token)
+    id_data = get_identity(access_token)
+    # parse_id(id_data)
 
-    return f"You are {patreon_id}"
+    return id_data
 
 def get_identity(token):
     base_url = "https://www.patreon.com/api/oauth2/v2/"
@@ -59,6 +58,9 @@ def get_identity(token):
     r = httpx.get(identity_url, headers=headers, params=req)
     response = r.json()
     pprint.pprint(response)
+    return response
+
+def parse_id(resp):
     first_name = response['data']['attributes']['first_name']
     email = response['data']['attributes']['email']
     includes = response['included']
@@ -67,7 +69,7 @@ def get_identity(token):
             id_number = include['relationships']['campaign']['data']['id']
             attrs = include['attributes']
             pledge_cents = attrs['currently_entitled_amount_cents']
-            print(f"Member of {id_number} with {pledge_cents}")
+            #print(f"Member of {id_number} with {pledge_cents}")
 
     # session['email'] = email
     # session['username'] = first_name
