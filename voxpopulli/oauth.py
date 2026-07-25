@@ -6,13 +6,14 @@ from flask import (
 import pprint
 import os
 
-bp = Blueprint('oauth', __name__)
+bp = Blueprint('oauth', __name__, url_prefix='/api')
 
 @bp.route('/oauth')
 def oauth():
+    voxpop_uri = current_app.config.get('VOXPOPULLI_URI')
     params = {'response_type': 'code', 
         'client_id' : current_app.config['CLIENT_ID'],
-        'redirect_uri': 'http://127.0.0.1:5000/oauth/redirect'}
+        'redirect_uri': f'{voxpop_uri}/api/oauth/redirect'}
     authorize_url = 'https://www.patreon.com/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}'
     patreon_url = authorize_url.format(**params)
     return redirect(patreon_url)
@@ -21,12 +22,13 @@ def oauth():
 def tokenize():
     code = request.args.get('code')
     token_url = "https://www.patreon.com/api/oauth2/token"
+    voxpop_uri = current_app.config.get('VOXPOPULLI_URI')
     token_params = {
         'code': code,
         'grant_type': 'authorization_code',
         'client_id' : current_app.config['CLIENT_ID'],
         'client_secret' : current_app.config['CLIENT_SECRET'],
-        'redirect_uri' : 'http://127.0.0.1:5000/oauth/redirect',
+        'redirect_uri' : f'{voxpop_uri}/api/oauth/redirect',
         'scope' : 'identity,identity[email],identity.memberships'
     }
     headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -35,16 +37,17 @@ def tokenize():
     print(r.status_code)
     resp_dict = r.json()
     pprint.pprint(resp_dict)
+
     access_token = resp_dict['access_token']
     refresh_token = resp_dict['refresh_token']
     expiry = resp_dict['expires_in']
     scope = resp_dict['scope']
 
-    return f"Authenticated with {access_token}"
+    patreon_id = get_identity(access_token)
 
-@bp.route('/identity') 
-def get_identity():
-    token = current_app.config['CLIENT_TOKEN']
+    return f"You are {patreon_id}"
+
+def get_identity(token):
     base_url = "https://www.patreon.com/api/oauth2/v2/"
     identity_url = base_url + "identity"
     headers = { 'Authorization': f'Bearer {token}'}
@@ -66,8 +69,8 @@ def get_identity():
             pledge_cents = attrs['currently_entitled_amount_cents']
             print(f"Member of {id_number} with {pledge_cents}")
 
-    session['email'] = email
-    session['username'] = first_name
+    # session['email'] = email
+    # session['username'] = first_name
 
-    return f"You are {first_name} of email {email}"
+    return first_name
 
