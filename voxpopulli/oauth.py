@@ -13,8 +13,10 @@ def oauth():
     voxpop_uri = current_app.config.get('VOXPOPULLI_URI')
     params = {'response_type': 'code', 
         'client_id' : current_app.config['CLIENT_ID'],
-        'redirect_uri': f'{voxpop_uri}/api/oauth/redirect'}
-    authorize_url = 'https://www.patreon.com/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}'
+        'redirect_uri': f'{voxpop_uri}/api/oauth/redirect',
+        'scope': 'identity identity[email] identity.memberships' # campaigns campaigns.members campaigns.members[email] campaigns.members.address'
+    }
+    authorize_url = 'https://www.patreon.com/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}'
     patreon_url = authorize_url.format(**params)
     return redirect(patreon_url)
 
@@ -57,7 +59,7 @@ def get_identity(token):
     }
     r = httpx.get(identity_url, headers=headers, params=req)
     response = r.json()
-    pprint.pprint(response)
+    #pprint.pprint(response)
     return response
 
 def parse_id(resp):
