@@ -307,7 +307,7 @@ def instant_run_off(ballots):
 def decode_election(result):
     winners = result.get_winners()
     if not winners:
-        return []
+        return "No winner", []
 
     winner = winners[0].name
     pyrank_rounds = result.rounds
