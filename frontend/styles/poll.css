@@ -23,13 +23,28 @@
     padding: 0.75rem;
 }
 
-.login-button {
+a.login-button {
     padding: 1px 6px;
     border: 1px outset buttonborder;
     border-radius: 3px;
     color: buttontext;
     background-color: buttonface;
     text-decoration: none;
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+a.results-button {
+    padding: 1px 6px;
+    border: 1px outset buttonborder;
+    border-radius: 3px;
+    color: buttontext;
+    background-color: buttonface;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 10px;
 }
 
 .submit-button {
@@ -43,6 +58,8 @@
     -webkit-appearance: none;
     font-family: inherit;
     font-size: inherit;
+    margin-top: 8px;
+    margin-bottom: 10px;
 }
 
 .opt::before {

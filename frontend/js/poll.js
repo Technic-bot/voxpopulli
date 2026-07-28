@@ -10,6 +10,7 @@ var poll_end = document.getElementById('poll-end');
 
 var option_list = document.getElementById('options');
 var submit_button = document.getElementById('submit-button');
+var results_button = document.getElementById('results-link');
 
 var ballot_state = document.getElementById('ballot-status');
 
@@ -42,6 +43,8 @@ async function fetchPoll(){
         poll_id = result.id;
         const opts = result.options;
         opts.forEach(make_suggestions);
+
+        results_button.href = `result?id=${poll_id}`;
 
     } catch (error) {
         console.error(error.message);
