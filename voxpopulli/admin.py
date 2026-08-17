@@ -31,7 +31,9 @@ def publish_poll():
     poll_id = row['poll_id']
     
     sug_params = []
-    for s in poll['suggestions']:
+    suggestions = poll['suggestions']
+    proc_suggs = parse_suggestions(suggestions)
+    for s in proc_suggs:
         sug_text = s.strip()
         if sug_text:
             sug_params.append((poll_id, sug_text))
@@ -51,3 +53,21 @@ def publish_poll():
 
     return jsonify(resp_dic)
 
+def parse_suggestions(suggestions):
+    """ 
+        Remove whitespace and duplicates suggestions 
+        A suggestion is duplicate even if casing vaires 
+    """
+    canon_sugs = []
+    sug_set = set()
+    for s in suggestions:
+        no_white_space = s.strip()
+        # No whitespace suggestions
+        if not no_white_space:
+            continue
+        # Deduplicate
+        lower_sug = no_white_space.lower()
+        if not lower_sug in sug_set:
+            sug_set.add(lower_sug) 
+            canon_sugs.append(no_white_space)
+    return canon_sugs

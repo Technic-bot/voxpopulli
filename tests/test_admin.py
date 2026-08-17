@@ -62,4 +62,19 @@ def test_upload_flow(client):
         assert opt['text'] in opts
 
 
-
+def test_duplicate_entries(client):
+    now = datetime.now()
+    closing = now + timedelta(hours=1)
+    closes_at = closing.strftime("%Y-%m-%d %H:%M:%S")
+    resp = client.post('/api/admin/poll', json={
+            'name': 'Sunday Poll',
+            'closes_at': closes_at,
+            'suggestions': [
+                "Rolling Hills!",
+                "rolling hills!",
+                "  Rolling hills!    "
+            ]
+           })
+    new_poll_id = resp.json['id']
+    suggestions = resp.json['suggestions']
+    assert suggestions == 1
