@@ -14,14 +14,15 @@ async function fetchPoll(){
     const url = `api/polls/${poll_id}/result`;
     try {
         const resp = await fetch(url);
+        const result = await resp.json();
         if (!resp.ok) {
-            throw new Error(`Response status ${resp.status}`);
+            poll_name.textContent = `Poll: ${poll_id}`;
+            poll_winner.textContent = `${result.message}`;
+            throw new Error(`Response status ${result.error}`);
         }
 
-        const result = await resp.json();
-        console.log(result)
         poll_winner.textContent = `Winner is: ${result.winner}`;
-        poll_name.textContent = `Poll: ${result.name} `;
+        poll_name.textContent = `Poll: ${result.name}`;
         poll_id_p.textContent = `Poll id: ${poll_id}`;
         poll_date.textContent = `Poll created at: ${result.created_at}`;
         poll_end.textContent = `Poll closed at: ${result.closes_at}`;
