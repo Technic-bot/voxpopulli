@@ -76,11 +76,16 @@ async function submit_ballot(){
             },
             body: JSON.stringify(payload)
         });
+        const response_msg = await resp.json();
         if (!resp.ok) {
-            const error_msg = await resp.json();
-            ballot_state.textContent = error_msg.message;
+            ballot_state.textContent = response_msg.message;
+            ballot_state.style.color = "Red";
             throw new Error(`Response status ${resp.status}`);
+        } else {
+            ballot_state.textContent = `Vote successfull ballot id: ${response_msg.id}`;
+            ballot_state.style.color = "Green";
         }
+
     } catch (error) {
         console.error(error.message);
     }
