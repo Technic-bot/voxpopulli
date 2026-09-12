@@ -233,7 +233,7 @@ def get_poll_result(poll_id):
     if check_poll_open(poll):
         error = {
             'error' : 'poll_not_finished',
-            'message': 'Poll is not closed'
+            'message': 'Poll has not closed'
         }
         return error, 403
 
