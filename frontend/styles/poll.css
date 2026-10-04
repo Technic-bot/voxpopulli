@@ -2,11 +2,20 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  height: 80vh;
 }   
+
+.col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 
 .options {
     border: 1px solid #d4d4d0;
-    min-height: 280px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .ballot-status {
