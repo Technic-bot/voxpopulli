@@ -44,9 +44,9 @@ def tokenize():
     scope = resp_dict['scope']
 
     id_data = get_identity(access_token)
-    # parse_id(id_data)
+    pledges = parse_id(id_data)
 
-    return id_data
+    return pledges
 
 def get_identity(token):
     base_url = "https://www.patreon.com/api/oauth2/v2/"
@@ -62,19 +62,27 @@ def get_identity(token):
     #pprint.pprint(response)
     return response
 
-def parse_id(resp):
+def parse_id(response):
     first_name = response['data']['attributes']['first_name']
     email = response['data']['attributes']['email']
     includes = response['included']
+    pledges = []
     for include in includes:
         if include['type'] == 'member':
             id_number = include['relationships']['campaign']['data']['id']
             attrs = include['attributes']
             pledge_cents = attrs['currently_entitled_amount_cents']
+            patreon_status = attrs['patron_status']
+            pledge = { 
+                "id": id_number, 
+                "pledge": pledge_cents,
+                "status": patreon_status
+            }
+            pledges.append(pledge)
             #print(f"Member of {id_number} with {pledge_cents}")
 
     # session['email'] = email
     # session['username'] = first_name
 
-    return first_name
+    return pledges
 
